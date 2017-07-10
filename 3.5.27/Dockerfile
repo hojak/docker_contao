@@ -1,4 +1,4 @@
-FROM php:5.6-apache
+FROM php:7-apache
 
 LABEL version="0.1.1" \
 	description="Docker Image for a contao installation version 3.5.27" \
@@ -10,6 +10,7 @@ RUN set -ex; \
 	\
 	apt-get update; \
 	apt-get install -y \
+		libicu-dev \
 		libjpeg-dev \
 		libpng12-dev \
 		libgmp-dev \
@@ -24,9 +25,9 @@ RUN set -ex; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/; \
+	export CFLAGS="-I/usr/src/php" ;\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
-	docker-php-ext-install gd mysqli gmp bcmath zip mcrypt xmlwriter xmlreader iconv bz2 mbstring soap
-
+	docker-php-ext-install pdo pdo_mysql gd mysqli gmp bcmath zip mcrypt xmlwriter xmlreader iconv bz2 mbstring soap intl 
 
 RUN a2enmod rewrite expires
 
