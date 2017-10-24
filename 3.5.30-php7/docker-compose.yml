@@ -1,0 +1,29 @@
+version: "2"
+services:
+  web:
+    image: hojak/contao:3.5.30-php7
+    container_name: contao-web
+    ports:
+      - "8088:80"
+    depends_on:
+      - "mysql"
+    links:
+      - mysql
+#    volumes:
+#        - [a path to an own module]:/var/www/html/system/modules/mymodule
+  mysql:
+    image: mysql:latest
+    container_name: contao-mysql
+    environment:
+	MYSQL_ROOT_PASSWORD: root
+	MYSQL_DATABASE: contaodb
+ 	MYSQL_USER: contao
+	MYSQL_PASSWORD: contao
+  phpmyadmin:
+	image: nazarpc/phpmyadmin
+	container_name: contao-phpmyadmin
+	ports: 
+	  - "8888:80"
+	links:
+	  - mysql
+
