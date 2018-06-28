@@ -1,7 +1,7 @@
 FROM php:7-apache
 
 LABEL version="0.1.1" \
-	description="Docker Image for a contao installation version 4.4.0" \
+	description="Docker Image for a contao installation version 4.4.*" \
 	maintainer="Holger Janßen-Kroll <docker@ho-jk.de>"
 
 
@@ -12,7 +12,7 @@ RUN set -ex; \
 	apt-get install -y \
 		libicu-dev \
 		libjpeg-dev \
-		libpng12-dev \
+		libpng-dev \
 		libgmp-dev \
 		libmcrypt-dev \
 		libxml2-dev \
@@ -23,24 +23,25 @@ RUN set -ex; \
 	; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-	\
 	ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/; \
+        pecl install mcrypt-1.0.1; \
 	export CFLAGS="-I/usr/src/php" ;\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
-	docker-php-ext-install pdo pdo_mysql gd mysqli gmp bcmath zip mcrypt xmlwriter xmlreader iconv bz2 mbstring soap intl 
+        docker-php-ext-enable mcrypt; \
+	docker-php-ext-install pdo pdo_mysql gd mysqli gmp bcmath zip xmlwriter xmlreader iconv bz2 mbstring soap intl 
 
 RUN a2enmod rewrite expires
 
 
 RUN set -ex; \
         # set the correct document root
-
+        #
         perl -pi -e "s#/var/www/html#/var/www/html/web#" /etc/apache2/sites-available/000-default.conf ; \
         perl -pi -e "s#/var/www/html#/var/www/html/web#" /etc/apache2/sites-available/default-ssl.conf ;\
-
+        #
 	# set php timezone
+        #
 	echo "date.timezone = 'Europe/Berlin'\n" >> /usr/local/etc/php/php.ini
-
 RUN set -ex; \
 	curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
