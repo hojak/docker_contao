@@ -20,14 +20,15 @@ RUN set -ex; \
 		libbz2-dev \
 		zlib1g-dev \
 		vim \
+		libmagickwand-dev \
 	; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
 	ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/; \
-        pecl install mcrypt-1.0.1; \
+        pecl install mcrypt-1.0.1 imagick; \
 	export CFLAGS="-I/usr/src/php" ;\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
-        docker-php-ext-enable mcrypt; \
+        docker-php-ext-enable mcrypt imagick; \
 	docker-php-ext-install pdo pdo_mysql gd mysqli gmp bcmath zip xmlwriter xmlreader iconv bz2 mbstring soap intl 
 
 RUN a2enmod rewrite expires
